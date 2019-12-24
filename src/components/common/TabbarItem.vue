@@ -1,5 +1,5 @@
 <template>
-  <div class="tabbar-item">
+  <div class="tabbar-item" @click="getPath()">
     <div v-if="!isActive">
       <slot name="tab-icon"></slot>
     </div>
@@ -15,9 +15,19 @@
 <script>
 export default {
   name:'TabbarItem',
+  props:{
+    path:{
+      type:String
+    }
+  },
   computed:{
     isActive(){
-      return true
+      return this.$route.path.indexOf(this.path) !=-1
+    }
+  },
+  methods:{
+    getPath(){
+      this.$router.push(this.path)
     }
   }
 }

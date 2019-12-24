@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <router-view></router-view>
     <Main-tabbar></Main-tabbar>
   </div>
 </template>
