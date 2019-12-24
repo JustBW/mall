@@ -1,10 +1,10 @@
 <template>
   <div id="app">
-    <main-tabbar></main-tabbar>
+    <Main-tabbar></Main-tabbar>
   </div>
 </template>
 <script>
-import MainTabber from 'components/MainTabbar'
+import MainTabbar from 'components/MainTabbar'
 export default {
   name:'App',
   components:{
