@@ -35,6 +35,7 @@ export default {
 </script>
 <style>
 .tabbar-item{
+  margin-top:3px;
   height: 49px;
   text-align: center;
   font-size:14px;
