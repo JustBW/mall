@@ -24,6 +24,11 @@ export default {
   line-height: 44px;
   height: 44px;
   box-shadow: 0px 1px 1px rgba(100,100,100,.1);
+  position: fixed;
+  left:0;
+  right: 0;
+  top:0;
+  z-index:9;
 }
 .nav-bar .left{
   width: 60px;
