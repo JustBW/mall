@@ -3,68 +3,28 @@
     <nav-bar class="home-nav">
       <div slot="center">购物车</div>
     </nav-bar>
-    <home-swiper :banners="banners"></home-swiper>
-    <home-recom :recommends="recommends"></home-recom>
-    <fashion-view/>
-    <tab-control class="tab-control" :titles="['流行','新款','精选']"></tab-control>
-    <ul>
-      <li>列表1</li>
-      <li>列表2</li>
-      <li>列表3</li>
-      <li>列表4</li>
-      <li>列表5</li>
-      <li>列表6</li>
-      <li>列表7</li>
-      <li>列表8</li>
-      <li>列表9</li>
-      <li>列表10</li>
-      <li>列表11</li>
-      <li>列表12</li>
-      <li>列表13</li>
-      <li>列表14</li>
-      <li>列表15</li>
-      <li>列表16</li>
-      <li>列表17</li>
-      <li>列表18</li>
-      <li>列表19</li>
-      <li>列表20</li>
-      <li>列表21</li>
-      <li>列表22</li>
-      <li>列表23</li>
-      <li>列表24</li>
-      <li>列表25</li>
-      <li>列表26</li>
-      <li>列表27</li>
-      <li>列表28</li>
-      <li>列表29</li>
-      <li>列表30</li>
-      <li>列表31</li>
-      <li>列表32</li>
-      <li>列表33</li>
-      <li>列表34</li>
-      <li>列表35</li>
-      <li>列表36</li>
-      <li>列表37</li>
-      <li>列表38</li>
-      <li>列表39</li>
-      <li>列表40</li>
-      <li>列表41</li>
-      <li>列表42</li>
-      <li>列表43</li>
-      <li>列表44</li>
-      <li>列表45</li>
-      <li>列表46</li>
-      <li>列表47</li>
-      <li>列表48</li>
-      <li>列表49</li>
-      <li>列表50</li>
-    </ul>
+    <Scroll class="content"
+            ref="scroll" 
+            :probe-type="3"
+            @scroll="showBack"
+            :pull-up-load="true"
+            @pullingUp="LoadMore">
+      <home-swiper :banners="banners"></home-swiper>
+      <home-recom :recommends="recommends"></home-recom>
+      <fashion-view/>
+      <tab-control class="tab-control" :titles="['流行','新款','精选']" @TabClick="tabclick"></tab-control>
+      <goods-list :Goods="showGoods"></goods-list>
+    </Scroll>
+    <scroll-top @click.native="backTop" v-show="isShow"></scroll-top>
   </div>
 </template>
 
 <script>
 import NavBar from 'components/common/navbar/NavBar'
 import TabControl from 'components/content/TabControl'
+import GoodsList from 'components/content/GoodsList/GoodList'
+import Scroll from 'components/common/scroll/Scroll'
+import ScrollTop from 'components/content/scrollTop/ScrollTop'
 
 import HomeSwiper from './childComps/HomeSwiper'
 import HomeRecom from './childComps/HomeRecom'
@@ -77,11 +37,13 @@ export default {
     return {
       banners:[],
       recommends:[],
+      currentSel:'pop',
       goods:{
         'pop':{page:1,list:[]},
         'new':{page:1,list:[]},
         'sell':{page:1,list:[]}
-      }
+      },
+      isShow:false
     }
   },
   components:{
@@ -89,13 +51,27 @@ export default {
     HomeSwiper,
     HomeRecom,
     FashionView,
-    TabControl
+    TabControl,
+    GoodsList,
+    Scroll,
+    ScrollTop
   },
   created() {
     this.getHomeData1();
     this.getViewData1('pop');
+    this.getViewData1('new');
+    this.getViewData1('sell');
+
+  },
+  computed: {
+    showGoods(){
+      return this.goods[this.currentSel].list
+    }
   },
   methods:{
+    /**
+     * 网络请求封装
+     */
     getHomeData1(){
       getHomeData().then(res=>{
       this.banners = res.data.data.banner.list;
@@ -105,23 +81,63 @@ export default {
     getViewData1(type){
       const page = this.goods[type].page;
       getViewData(type,page).then(res=>{
-        this.goods[type].list.push(...res.list);
+        this.goods[type].list.push(...res.data.data.list);
         this.goods[type].page+=1;
+        this.$refs.scroll.finished(); //结束回调，才可以进行下一次回调
       })
+    
+    },
+    /**
+     * 事件监听方法
+     * 导航选项切换
+     * 
+     */
+    tabclick(index){
+      switch (index) {
+        case 0:
+          this.currentSel = 'pop'
+          break;
+        case 1:
+          this.currentSel = 'new';
+          break;
+        case 2:
+          this.currentSel = 'sell';
+          break;
+        default:
+          break;
+      }
+    },
+    backTop(){
+      this.$refs.scroll.scrollTo(0,0)
+    },
+    showBack(position){
+      this.isShow = (-position.y) >1000
+    },
+    LoadMore(){
+      this.getViewData1(this.currentSel);
+      this.$refs.scroll.scroll.refresh();//刷新加载进图片后 scroll给的固定宽度
     }
   },
 }
 </script>
-<style>
-.tab-control{
-  position: sticky;
-  top:44px;
-}
-#home{
-  padding-top:44px;
-}
+<style scoped>
+  .tab-control{
+    position: sticky;
+    top:44px;
+  }
+  #home{
+    padding-top:44px;
+  }
   .home-nav{
     background-color: var(--color-tint);
     color:#fff;
+  }
+  .content{
+    overflow: hidden;
+    position: absolute;
+    top:44px;
+    bottom: 49px;
+    left:0;
+    right:0;
   }
 </style>

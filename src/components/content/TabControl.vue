@@ -29,6 +29,7 @@
     methods:{
       tabItem(index){
         this.currentIndex = index;
+        this.$emit('TabClick',this.currentIndex)
       }
     }
   }
@@ -40,6 +41,7 @@
   height: 40px;
   line-height:40px;
   background-color: #fff;
+  z-index: 9;
 }
 
 .item-tab{
