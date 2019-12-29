@@ -29,7 +29,7 @@ export default {
   mounted() {
     this.scroll = new Scroll(this.$refs.wrapper,{
       click:true,//点击事件是否生效
-      probeType:this.probeType, //是否进行实时监听下拉位置
+      probeType:this.probeType, //是否进行实时监听滚动 0/1 不监听 2手指滚动不监听惯性  3 手指滚动监听惯性
       pullUpLoad:this.pullUpLoad, //是否进行下拉加载
     });
     this.scroll.on('scroll',(position)=>{

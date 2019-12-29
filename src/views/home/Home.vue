@@ -3,16 +3,20 @@
     <nav-bar class="home-nav">
       <div slot="center">购物车</div>
     </nav-bar>
+    <tab-control ref="TabControl1" class="tab-control" :titles="['流行','新款','精选']" @TabClick="tabclick" v-show="isTabfixed"></tab-control>
     <Scroll class="content"
             ref="scroll" 
             :probe-type="3"
             @scroll="showBack"
             :pull-up-load="true"
             @pullingUp="LoadMore">
-      <home-swiper :banners="banners"></home-swiper>
+      <home-swiper :banners="banners" @imgLoad="finishLoad"></home-swiper>
       <home-recom :recommends="recommends"></home-recom>
       <fashion-view/>
-      <tab-control class="tab-control" :titles="['流行','新款','精选']" @TabClick="tabclick"></tab-control>
+      <tab-control class="tab-control" 
+                  :titles="['流行','新款','精选']" 
+                  @TabClick="tabclick"
+                  ref="TabControl2"></tab-control>
       <goods-list :Goods="showGoods"></goods-list>
     </Scroll>
     <scroll-top @click.native="backTop" v-show="isShow"></scroll-top>
@@ -43,7 +47,9 @@ export default {
         'new':{page:1,list:[]},
         'sell':{page:1,list:[]}
       },
-      isShow:false
+      isShow:false,
+      isTabfixed:false,
+      tabOffset:0
     }
   },
   components:{
@@ -63,12 +69,30 @@ export default {
     this.getViewData1('sell');
 
   },
+  // mounted() {
+  //   const refresh = this.debounce(this.$refs.scroll.refresh,50);
+
+  // },
   computed: {
     showGoods(){
       return this.goods[this.currentSel].list
     }
   },
   methods:{
+    /**
+     * 防抖动方法 或者可以定义节流方法
+     */
+    // debounce(func,delay){
+    //   let timer = null;
+    //   return function(...args){
+    //     if(timer) clearTimeout()
+    //       setTimeout(() => {
+    //       func.apply(this,args);
+    //   }, delay);
+    //   }
+    // },
+
+    
     /**
      * 网络请求封装
      */
@@ -106,16 +130,23 @@ export default {
         default:
           break;
       }
+      this.$refs.TabControl1.currentIndex=index;
+      this.$refs.TabControl2.currentIndex=index;
     },
     backTop(){
       this.$refs.scroll.scrollTo(0,0)
     },
     showBack(position){
       this.isShow = (-position.y) >1000
+      this.isTabfixed = (-position.y) >this.tabOffset;
     },
     LoadMore(){
       this.getViewData1(this.currentSel);
       this.$refs.scroll.scroll.refresh();//刷新加载进图片后 scroll给的固定宽度
+    },
+    finishLoad(){
+     this.tabOffset = this.$refs.TabControl2.$el.offsetTop;
+    // console.log(this.$refs.TabControl.$el.offsetTop);
     }
   },
 }
@@ -124,9 +155,6 @@ export default {
   .tab-control{
     position: sticky;
     top:44px;
-  }
-  #home{
-    padding-top:44px;
   }
   .home-nav{
     background-color: var(--color-tint);
