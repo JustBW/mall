@@ -49,7 +49,8 @@ export default {
       },
       isShow:false,
       isTabfixed:false,
-      tabOffset:0
+      tabOffset:0,
+      offsetY:0
     }
   },
   components:{
@@ -60,7 +61,7 @@ export default {
     TabControl,
     GoodsList,
     Scroll,
-    ScrollTop
+    ScrollTop,
   },
   created() {
     this.getHomeData1();
@@ -73,6 +74,13 @@ export default {
   //   const refresh = this.debounce(this.$refs.scroll.refresh,50);
 
   // },
+  activated() {
+    this.$refs.scroll.scrollTo(0,this.offsetY);
+    this.$refs.scroll.refresh();
+  },
+  deactivated() {
+    this.offsetY = this.$refs.scroll.getScrollY()
+  },
   computed: {
     showGoods(){
       return this.goods[this.currentSel].list
