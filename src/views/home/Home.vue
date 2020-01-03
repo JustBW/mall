@@ -30,6 +30,8 @@ import GoodsList from 'components/content/GoodsList/GoodList'
 import Scroll from 'components/common/scroll/Scroll'
 import ScrollTop from 'components/content/scrollTop/ScrollTop'
 
+import {itemImageListener} from 'common/mixin'
+
 import HomeSwiper from './childComps/HomeSwiper'
 import HomeRecom from './childComps/HomeRecom'
 import FashionView from './childComps/FashionView'
@@ -47,12 +49,11 @@ export default {
         'new':{page:1,list:[]},
         'sell':{page:1,list:[]}
       },
-      isShow:false,
-      isTabfixed:false,
       tabOffset:0,
       offsetY:0
     }
   },
+  mixins:[itemImageListener],
   components:{
     NavBar,
     HomeSwiper,
@@ -117,7 +118,6 @@ export default {
         this.goods[type].page+=1;
         this.$refs.scroll.finished(); //结束回调，才可以进行下一次回调
       })
-    
     },
     /**
      * 事件监听方法
@@ -141,20 +141,12 @@ export default {
       this.$refs.TabControl1.currentIndex=index;
       this.$refs.TabControl2.currentIndex=index;
     },
-    backTop(){
-      this.$refs.scroll.scrollTo(0,0)
-    },
-    showBack(position){
-      this.isShow = (-position.y) >1000
-      this.isTabfixed = (-position.y) >this.tabOffset;
-    },
     LoadMore(){
       this.getViewData1(this.currentSel);
       this.$refs.scroll.scroll.refresh();//刷新加载进图片后 scroll给的固定宽度
     },
-    finishLoad(){
-     this.tabOffset = this.$refs.TabControl2.$el.offsetTop;
-    // console.log(this.$refs.TabControl.$el.offsetTop);
+    finishLoad() {
+      this.tabOffset = this.$refs.TabControl2.$el.offsetTop;
     }
   },
 }

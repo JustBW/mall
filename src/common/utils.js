@@ -22,3 +22,22 @@ function padLeftZero(str) {
   return ('00' + str).substr(str.length);
 };
 
+//防抖函数 ---节流
+// export function debounce(func,time) {
+//   let timer = null;
+//   return function (...args) {
+//     if(timer) clearTimeout()
+//     setTimeout(() => {
+//       func.apply(this,args);
+//     }, time);
+//   }
+// }
+export function debounce(func, delay) {
+  let timer = null;
+  return function (...args) {
+    if (timer) clearTimeout()
+    setTimeout(() => {
+      func.apply(this, args);
+    }, delay);
+  }
+}

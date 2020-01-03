@@ -27,6 +27,7 @@ export default {
  methods:{
    cutTab(index){
      this.currentIndex = index;
+     this.$emit('titleClick',index);
    },
    backHome(){
      this.$router.back()
